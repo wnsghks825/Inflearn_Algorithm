@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31019.35
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithm", "Algorithm.csproj", "{E78E6CC8-B254-4053-82BA-7A927294A4BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise", "..\Exercise\Exercise.csproj", "{9DC05575-C9F2-47BB-AF75-C2EE4B200B11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graph", "..\Exercise1\Graph.csproj", "{43A14E93-8519-43F7-8776-A5E7CFA36DB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9DC05575-C9F2-47BB-AF75-C2EE4B200B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DC05575-C9F2-47BB-AF75-C2EE4B200B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DC05575-C9F2-47BB-AF75-C2EE4B200B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A14E93-8519-43F7-8776-A5E7CFA36DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A14E93-8519-43F7-8776-A5E7CFA36DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A14E93-8519-43F7-8776-A5E7CFA36DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A14E93-8519-43F7-8776-A5E7CFA36DB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
