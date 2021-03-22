@@ -1,277 +1,183 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Algorithm
 {
-    //동적배열
-    /*
-    class MyList<T>
-    {
-        const int DEFAULT_SIZE = 1;
-        T[] _data = new T[DEFAULT_SIZE];
-        public int Count;//실제로 사용중인 데이터의 갯수
-        public int Capacity { get { return _data.Length; } }//예약된 데이터의 갯수. 배열의 크기와 Capacity는 일치
+	class Board
+	{
+		const char CIRCLE = '\u25cf';
+		public TileType[,] Tile { get; private set; }
+		public int Size { get; private set; }
 
+		public int DestY { get; private set; }
+		public int DestX { get; private set; }		
 
-        //O(1)
-        //추가
-        public void Add(T item)
-        {
-            //1. 공간이 충분히 남아있는지 확인한다.
-            if (Count >= Capacity)
-            {
-                //공간 다시 확보(늘려서)
-                T[] newArray = new T[Count * 2];
-                for (int i = 0; i < Count; i++)
-                    newArray[i] = _data[i];
-                _data = newArray;
+		Player _player;
 
-            }
-            //2. 공간에 데이터를 추가한다. 
-            _data[Count] = item;
-            Count++;
-        }
+		public enum TileType
+		{
+			Empty,
+			Wall,
+		}
 
-        //인덱서
-        //O(1)
-        public T this[int index]
-        {
-            get { return _data[index]; }
-            set { _data[index] = value; }
-        }
-        //O(n)
-        public void RemoveAt(int index)
-        {
-            for (int i = index; i < Count - 1; i++)
-                _data[i] = _data[i + 1];
-            _data[Count - 1] = default(T);
-            Count--;
-        }
-        
-    }
-    */
+		public void Initialize(int size, Player player)
+		{
+			if (size % 2 == 0)
+				return;
 
-    //연결 리스트
-    /*
-    class Room<T>
-    {
-        public T Data;
-        public Room<T> Next;
-        public Room<T> Prev;
-    }
-    class RoomList<T>
-    {
-        public int Count = 0;
-        public Room<T> Head = null;    //첫번째
-        public Room<T> Tail;    //마지막
+			_player = player;
 
-        public Room<T> AddLast(T data)
-        {
-            Room<T> newRoom = new Room<T>();
-            newRoom.Data = data;
+			Tile = new TileType[size, size];
+			Size = size;
 
-            //만약 아직 방이 아예 없었다면, 새로 추가한 첫번째 방이 곧 Head이다.
-            if (Head == null)
-                Head = newRoom;
+			DestY = Size - 2;
+			DestX = Size - 2;
 
-            //기존의 [마지막 방]과 [새로 추가되는 방]을 연결해준다. 
-            if (Tail != null)
-            {
-                Tail.Next = newRoom;
-                newRoom.Prev = Tail;
-            }
+			// Mazes for Programmers
+			//GenerateByBinaryTree();
+			GenerateBySideWinder();
+		}
 
-            //[새로 추가되는 방]을 [마지막 방]으로 인정한다.
-            Tail = newRoom;
-            Count++;
-            return newRoom;
-        }
+		void GenerateBySideWinder()
+		{
+			// 일단 길을 다 막아버리는 작업
+			for (int y = 0; y < Size; y++)
+			{
+				for (int x = 0; x < Size; x++)
+				{
+					if (x % 2 == 0 || y % 2 == 0)
+						Tile[y, x] = TileType.Wall;
+					else
+						Tile[y, x] = TileType.Empty;
+				}
+			}
 
-        public void Remove(Room<T> room)
-        {
-            //[기존의 첫번째 방 다음 방]을 [첫번째 방]으로 인정한다. 
-            if (Head == room)
-                Head = Head.Next;
+			// 랜덤으로 우측 혹은 아래로 길을 뚫는 작업
+			Random rand = new Random();
+			for (int y = 0; y < Size; y++)
+			{
+				int count = 1;
+				for (int x = 0; x < Size; x++)
+				{
+					if (x % 2 == 0 || y % 2 == 0)
+						continue;
 
-            //[기존의 마지막 방 이전 방]을 [마지막 방]으로 인정한다. 
-            if (Tail == room)
-                Tail = Tail.Prev;
+					if (y == Size - 2 && x == Size - 2)
+						continue;
 
-            if (room.Prev != null)
-                room.Prev.Next = room.Next;
+					if (y == Size - 2)
+					{
+						Tile[y, x + 1] = TileType.Empty;
+						continue;
+					}
 
-            if (room.Next != null)
-                room.Next.Prev = room.Prev;
+					if (x == Size - 2)
+					{
+						Tile[y + 1, x] = TileType.Empty;
+						continue;
+					}
 
-            Count--;
-        }
-    }
-    */
+					if (rand.Next(0, 2) == 0)
+					{
+						Tile[y, x + 1] = TileType.Empty;
+						count++;
+					}
+					else
+					{
+						int randomIndex = rand.Next(0, count);
+						Tile[y + 1, x - randomIndex * 2] = TileType.Empty;
+						count = 1;
+					}
+				}
+			}
+		}
 
+		void GenerateByBinaryTree()
+		{
+			// 일단 길을 다 막아버리는 작업
+			for (int y = 0; y < Size; y++)
+			{
+				for (int x = 0; x < Size; x++)
+				{
+					if (x % 2 == 0 || y % 2 == 0)
+						Tile[y, x] = TileType.Wall;
+					else
+						Tile[y, x] = TileType.Empty;
+				}
+			}
 
-    class Board
-    {
-        const char CIRCLE = '\u25cf';
+			// 랜덤으로 우측 혹은 아래로 길을 뚫는 작업
+			Random rand = new Random();
+			for (int y = 0; y < Size; y++)
+			{
+				for (int x = 0; x < Size; x++)
+				{
+					if (x % 2 == 0 || y % 2 == 0)
+						continue;
 
-        public TileType[,] _tile;
-        public int _size;
+					if (y == Size - 2 && x == Size - 2)
+						continue;
 
+					if (y == Size - 2)
+					{
+						Tile[y, x + 1] = TileType.Empty;
+						continue;
+					}
 
-        public enum TileType
-        {
-            Empty,
-            Wall
-        }
+					if (x == Size - 2)
+					{
+						Tile[y + 1, x] = TileType.Empty;
+						continue;
+					}
 
-        public void Initialize(int size)
-        {
-            if (size % 2 == 0)
-                return;
-            _tile = new TileType[size, size];
-            _size = size;
+					if (rand.Next(0, 2) == 0)
+					{
+						Tile[y, x + 1] = TileType.Empty;
+					}
+					else
+					{
+						Tile[y + 1, x] = TileType.Empty;
+					}
+				}
+			}
+		}
 
-            //GenerateByBinaryTree();
-            GenerateBySideWinder();
+		public void Render()
+		{
+			ConsoleColor prevColor = Console.ForegroundColor;
 
-        }
-        public void GenerateByBinaryTree()
-        {
-            //일단 길을 막아버리는 작업
-            for(int y = 0; y < _size; y++)
-            {
-                for (int x = 0; x < _size; x++)
-                {
-                    if(x % 2 ==0 || y % 2 == 0)
-                        _tile[y, x] = TileType.Wall;
+			for (int y = 0; y < Size; y++)
+			{
+				for (int x = 0; x < Size; x++)
+				{
+					// 플레이어 좌표를 갖고 와서, 그 좌표랑 현재 y, x가 일치하면 플레이어 전용 색상으로 표시.
+					if (y == _player.PosY && x == _player.PosX)
+						Console.ForegroundColor = ConsoleColor.Blue;
+					else if (y == DestY && x == DestX)
+						Console.ForegroundColor = ConsoleColor.Yellow;
+					else
+						Console.ForegroundColor = GetTileColor(Tile[y, x]);
 
-                    else
-                        _tile[y, x] = TileType.Empty;
-                }
-            }
-            //랜덤으로 우측 혹은 아래로 길 뚫기
-            //Binary Tree Algorithm
-            Random rand = new Random();
+					Console.Write(CIRCLE);
+				}
+				Console.WriteLine();
+			}
 
-            for(int y = 0; y < _size; y++)
-            {
-                for (int x = 0; x < _size; x++)
-                {
-                    if (x % 2 == 0 || y % 2 == 0)
-                        continue;
+			Console.ForegroundColor = prevColor;
+		}
 
-                    if (y == _size - 2 && x == _size - 2)
-                        continue;
-
-                    if (y == _size - 2)
-                    {
-                        _tile[y, x + 1] = TileType.Empty;
-                        continue;
-                    }
-
-                    if (x == _size - 2)
-                    {
-                        _tile[y + 1, x] = TileType.Empty;
-                        continue;
-                    }
-
-                    if (rand.Next(0, 2) == 0)
-                    {
-                        _tile[y, x + 1] = TileType.Empty;
-                    }
-
-                    else
-                    {
-                        _tile[y+1, x] = TileType.Empty;
-                    }
-                }
-            }
-        }
-        public void GenerateBySideWinder()
-        {
-            //일단 길을 막아버리는 작업
-            for (int y = 0; y < _size; y++)
-            {
-                for (int x = 0; x < _size; x++)
-                {
-                    if (x % 2 == 0 || y % 2 == 0)
-                        _tile[y, x] = TileType.Wall;
-
-                    else
-                        _tile[y, x] = TileType.Empty;
-                }
-            }
-
-            //랜덤으로 우측 혹은 아래로 길 뚫기
-            Random rand = new Random();
-
-            for (int y = 0; y < _size; y++)
-            {
-                int count = 1;
-                for (int x = 0; x < _size; x++)
-                {
-                    if (x % 2 == 0 || y % 2 == 0)
-                        continue;
-
-                    if (y == _size - 2 && x == _size - 2)
-                        continue;
-
-                    if (y == _size - 2)
-                    {
-                        _tile[y, x + 1] = TileType.Empty;
-                        continue;
-                    }
-
-                    if (x == _size - 2)
-                    {
-                        _tile[y + 1, x] = TileType.Empty;
-                        continue;
-                    }
-
-                    if (rand.Next(0, 2) == 0)
-                    {
-                        _tile[y, x + 1] = TileType.Empty;
-                        count++;
-                    }
-
-                    else
-                    {
-                        int randomIndex = rand.Next(0, count);
-                        _tile[y + 1, x - randomIndex * 2] = TileType.Empty;
-                        count = 1;
-                    }
-                }
-            }
-        }
-        public void Render()
-        {
-            ConsoleColor prevColor = Console.ForegroundColor;
-            for (int y = 0; y < _size; y++)
-            {
-                for (int x = 0; x < _size; x++)
-                {
-
-                    Console.ForegroundColor = GetTileColor(_tile[y, x]);
-                    Console.Write(CIRCLE);
-                }
-                Console.WriteLine();
-            }
-            Console.ForegroundColor = prevColor;
-        }
-
-        ConsoleColor GetTileColor(TileType type)
-        {
-            switch (type)
-            {
-                case TileType.Empty:
-                    return ConsoleColor.Green;
-                case TileType.Wall:
-                    return ConsoleColor.Red;
-                default:
-                    return ConsoleColor.Green;
-            }
-        }
-    }
+		ConsoleColor GetTileColor(TileType type)
+		{
+			switch (type)
+			{
+				case TileType.Empty:
+					return ConsoleColor.Green;
+				case TileType.Wall:
+					return ConsoleColor.Red;
+				default:
+					return ConsoleColor.Green;
+			}
+		}
+	}
 }
