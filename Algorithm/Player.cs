@@ -20,7 +20,7 @@ namespace Algorithm
 
 		enum Dir
 		{
-			Up = 0,
+			Up = 0, 
 			Left = 1,
 			Down = 2,
 			Right = 3 
