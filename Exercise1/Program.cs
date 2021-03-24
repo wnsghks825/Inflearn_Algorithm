@@ -87,6 +87,7 @@ namespace Exercise
                 }
             }
         }
+        //목적지 알려주지 않고 시작점을 알려준 상태에서 모든 지점에 대해 이동하는 경로와 횟수를 알아서 찾아주는 알고리즘
         public void BFS(int start)
         {
             bool[] found = new bool[6];
